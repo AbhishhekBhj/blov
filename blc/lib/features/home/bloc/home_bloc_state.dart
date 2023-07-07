@@ -10,10 +10,12 @@ class HomeBlocInitial extends HomeBlocState {}
 //loading bar showing until data is fetched from server
 class HomeLoadingState extends HomeBlocState {}
 
-class HomeLoadedSuccessState extends HomeBlocState {}
+class HomeLoadedSuccessState extends HomeBlocState {
+  final List<ProductDataModel> products;
+  HomeLoadedSuccessState({required this.products});
+}
 
 //if errors
-
 class HomeErrorState extends HomeBlocState {}
 
 class HomeNavigateToWishListPageActionState extends HomeActionState {}

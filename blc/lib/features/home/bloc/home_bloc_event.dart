@@ -10,3 +10,7 @@ class HomeProductCartButtonClickEvent extends HomeBlocEvent {}
 class HomeWishListButtonNavigateEvent extends HomeBlocEvent {}
 
 class HomeCartButtonNavigateEvent extends HomeBlocEvent {}
+
+class HomeInitialEvent extends HomeBlocEvent{
+  
+}
