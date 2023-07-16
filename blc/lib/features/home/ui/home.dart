@@ -37,10 +37,10 @@ class _HomeState extends State<Home> {
               context, MaterialPageRoute(builder: (context) => WishlistPage()));
         } else if (state is HomeProductItemAddedCartActionState) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Item Carted')));
+              .showSnackBar(SnackBar(content: Text('Item Added to Cart')));
         } else if (state is HomeProductItemWishListedActionState) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Item Wishlisted')));
+              .showSnackBar(SnackBar(content: Text('Item Added to WIshlist')));
         }
       },
       builder: (context, state) {
@@ -54,8 +54,8 @@ class _HomeState extends State<Home> {
             final successState = state as HomeLoadedSuccessState;
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: Colors.teal,
-                title: Text('Akshit Grocery App'),
+                backgroundColor: Colors.deepPurple,
+                title: Text('Bhujel Fashion House'),
                 actions: [
                   IconButton(
                       onPressed: () {
