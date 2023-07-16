@@ -2,7 +2,10 @@ import 'package:blc/features/cart/ui/cart.dart';
 import 'package:blc/features/home/bloc/home_bloc_bloc.dart';
 import 'package:blc/features/wishlist/ui/wishlist.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'product_tile.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,94 +15,74 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final HomeBlocBloc homeBlocBloc = HomeBlocBloc();
   @override
   void initState() {
-    homeBlocBloc.add(HomeInitialEvent());
+    homeBloc.add(HomeInitialEvent());
     super.initState();
   }
 
+  final HomeBlocBloc homeBloc = HomeBlocBloc();
   @override
   Widget build(BuildContext context) {
-    //handles events and the states
     return BlocConsumer<HomeBlocBloc, HomeBlocState>(
-      bloc: homeBlocBloc,
-      listenWhen: (previous, current) => current
-          is HomeActionState, //take action when the state is homeactionstate
-      buildWhen: (previous, current) =>
-          current is! HomeActionState, //build ui if not homeactionstate
+      bloc: homeBloc,
+      listenWhen: (previous, current) => current is HomeActionState,
+      buildWhen: (previous, current) => current is! HomeActionState,
       listener: (context, state) {
-        //if this state
         if (state is HomeNavigateToCartPageActionState) {
-          //navigate towards cart page
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CartPage(),
-              ));
-        }
-
-        //if this state
-        else if (state is HomeNavigateToWishListPageActionState) {
-          //navigate towards wishilist page
+              context, MaterialPageRoute(builder: (context) => CartPage()));
+        } else if (state is HomeNavigateToWishListPageActionState) {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => WishlistPage(),
-              ));
+              context, MaterialPageRoute(builder: (context) => WishlistPage()));
+        } else if (state is HomeProductItemAddedCartActionState) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Item Carted')));
+        } else if (state is HomeProductItemWishListedActionState) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Item Wishlisted')));
         }
       },
       builder: (context, state) {
         switch (state.runtimeType) {
-          //if loading state
           case HomeLoadingState:
             return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-            break;
-          //if successfully loaded
+                body: Center(
+              child: CircularProgressIndicator(),
+            ));
           case HomeLoadedSuccessState:
+            final successState = state as HomeLoadedSuccessState;
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: Colors.deepPurpleAccent,
-                title: Text("Hamro Kirana Pasal"),
-                centerTitle: true,
+                backgroundColor: Colors.teal,
+                title: Text('Akshit Grocery App'),
                 actions: [
                   IconButton(
-                    onPressed: () {
-                      //map to bloc event & navigate to wishlist
-                      homeBlocBloc.add(HomeWishListButtonNavigateEvent());
-                    },
-                    icon: Icon(Icons.favorite_border_outlined),
-                  ),
+                      onPressed: () {
+                        homeBloc.add(HomeWishListButtonNavigateEvent());
+                      },
+                      icon: Icon(Icons.favorite_border)),
                   IconButton(
                       onPressed: () {
-                        //map to bloc event & navigate to cart page
-
-                        homeBlocBloc.add(HomeCartButtonNavigateEvent());
+                        homeBloc.add(HomeCartButtonNavigateEvent());
                       },
-                      icon: Icon(
-                        Icons.shopping_cart_outlined,
-                      ))
+                      icon: Icon(Icons.shopping_bag_outlined)),
                 ],
               ),
+              body: ListView.builder(
+                  itemCount: successState.products.length,
+                  itemBuilder: (context, index) {
+                    return ProductTile(
+                        homeBloc: homeBloc,
+                        productDataModel: successState.products[index]);
+                  }),
             );
-            break;
+
           case HomeErrorState:
-            return Scaffold(
-              body: Center(
-                child: Text(
-                  "Error!",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
-            );
+            return Scaffold(body: Center(child: Text('Error')));
           default:
-            return Container();
+            return SizedBox();
         }
-        print(state.runtimeType);
       },
     );
   }
